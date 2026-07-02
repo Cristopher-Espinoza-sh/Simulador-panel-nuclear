@@ -81,7 +81,14 @@ with col_estado:
     st.markdown("<div class='panel-caja'>", unsafe_allow_html=True)
     st.subheader("📊 ESTADO DEL SISTEMA")
     
-    # Indicadores visuales de Turbina y Ventilación
+    # NUEVO: Bloque visual enorme para el estado del Reactor
+    if st.session_state.reactor == "encendido":
+        st.error("☢️ NÚCLEO DEL REACTOR: EN LÍNEA (PELIGRO DE FUSIÓN)")
+    else:
+        st.success("✅ NÚCLEO DEL REACTOR: APAGADO (ESTABILIZADO)")
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Indicadores visuales de Turbina, Ventilación y Reactor
     turbina_color = "indicador-on" if st.session_state.turbina == "encendida" else "indicador-off"
     turbina_texto = "EN MARCHA" if st.session_state.turbina == "encendida" else "DETENIDAS"
     st.markdown(f"🔄 **Turbinas:** <span class='{turbina_color}'>{turbina_texto}</span>", unsafe_allow_html=True)
@@ -90,6 +97,10 @@ with col_estado:
     vent_texto = "CERRADA" if st.session_state.ventilacion == "cerrada" else "ABIERTA"
     st.markdown(f"💨 **Ventilación:** <span class='{vent_color}'>{vent_texto}</span>", unsafe_allow_html=True)
     
+    reactor_color = "indicador-off" if st.session_state.reactor == "encendido" else "indicador-on"
+    reactor_texto = "ACTIVO" if st.session_state.reactor == "encendido" else "APAGADO"
+    st.markdown(f"☢️ **Reactor:** <span class='{reactor_color}'>{reactor_texto}</span>", unsafe_allow_html=True)
+
     st.markdown("<br>", unsafe_allow_html=True)
 
     # Lógica de la Energía
