@@ -13,33 +13,32 @@ st.markdown("""
         color: #39ff14;
         font-family: 'Courier New', Courier, monospace;
     }
-    /* Estilo del texto general */
-    h1, h2, h3, p, label {
+    h1, h2, h3, p, label, li {
         color: #39ff14 !important;
     }
-    /* El número del temporizador en rojo y brillante */
     [data-testid="stMetricValue"] {
         color: #ff003c !important;
         font-size: 4rem !important;
         text-shadow: 0px 0px 15px #ff003c;
     }
-    /* Cajas del panel */
     .panel-caja {
         border: 2px solid #333;
         background-color: #161b22;
         padding: 20px;
         border-radius: 8px;
         box-shadow: inset 0 0 10px #000;
+        height: 100%;
     }
-    /* Barras de progreso en verde */
     .stProgress > div > div > div {
         background-color: #39ff14;
     }
-    /* Separadores */
     hr {
         border-color: #39ff14;
         opacity: 0.3;
     }
+    /* Colores dinámicos para los indicadores de estado */
+    .indicador-on { color: #39ff14; font-weight: bold; }
+    .indicador-off { color: #ff003c; font-weight: bold; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -48,7 +47,7 @@ if 'inicio' not in st.session_state:
     st.session_state.inicio = time.time()
     st.session_state.turbina = "encendida"
     st.session_state.ventilacion = "cerrada"
-    st.session_state.agua = "normal" # Puede ser 'normal', 'evacuada' o 'ingresada'
+    st.session_state.agua = "normal" 
     st.session_state.reactor = "encendido"
     st.session_state.alerta = ""
     st.session_state.exito = False
@@ -65,7 +64,7 @@ if tiempo_restante == 0 and not st.session_state.exito:
 st.markdown("<h1 style='text-align: center;'>☢️ SISTEMA DE CONTENCIÓN DEL NÚCLEO ☢️</h1>", unsafe_allow_html=True)
 st.markdown("<hr>", unsafe_allow_html=True)
 
-# Contenedor superior para el tiempo
+# Contenedor del reloj central
 col_vacia, col_reloj, col_vacia2 = st.columns([1, 2, 1])
 with col_reloj:
     if st.session_state.game_over:
@@ -75,23 +74,34 @@ with col_reloj:
     else:
         st.metric(label="TIEMPO RESTANTE", value=f"00:{str(tiempo_restante).zfill(2)}")
 
-# Columnas principales (Barras a la izquierda, Botones a la derecha)
+# Columnas de Estado y Control
 col_estado, col_panel = st.columns([1, 1])
 
 with col_estado:
     st.markdown("<div class='panel-caja'>", unsafe_allow_html=True)
-    st.subheader("📊 ESTADO")
+    st.subheader("📊 ESTADO DEL SISTEMA")
     
+    # Indicadores visuales de Turbina y Ventilación
+    turbina_color = "indicador-on" if st.session_state.turbina == "encendida" else "indicador-off"
+    turbina_texto = "EN MARCHA" if st.session_state.turbina == "encendida" else "DETENIDAS"
+    st.markdown(f"🔄 **Turbinas:** <span class='{turbina_color}'>{turbina_texto}</span>", unsafe_allow_html=True)
+    
+    vent_color = "indicador-off" if st.session_state.ventilacion == "cerrada" else "indicador-on"
+    vent_texto = "CERRADA" if st.session_state.ventilacion == "cerrada" else "ABIERTA"
+    st.markdown(f"💨 **Ventilación:** <span class='{vent_color}'>{vent_texto}</span>", unsafe_allow_html=True)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+
     # Lógica de la Energía
-    energia = 100 if st.session_state.reactor == "encendido" else 0
-    st.write(f"⚡ Energía: {energia} MWh")
+    energia = 100 if st.session_state.turbina == "encendida" and st.session_state.reactor == "encendido" else 0
+    st.write(f"⚡ Energía: {energia} MWe")
     st.progress(energia / 100)
 
     # Lógica de la Temperatura
     temp = 480
     if st.session_state.agua == "ingresada":
         temp = 150
-    st.write(f"🌡️ Temperatura: {temp}°C")
+    st.write(f"🌡️ Temperatura del refrigerante: {temp}°C")
     st.progress(min(temp/500, 1.0))
     if temp > 400:
         st.markdown("<p style='color: #ff003c;'>⚠️ CRÍTICO: TEMPERATURA SUPERA LOS 400°C</p>", unsafe_allow_html=True)
@@ -107,9 +117,20 @@ with col_estado:
 
 with col_panel:
     st.markdown("<div class='panel-caja'>", unsafe_allow_html=True)
+    
+    # Lista de pasos a realizar
+    st.subheader("📋 PASOS A REALIZAR")
+    st.markdown("""
+    1. Detener turbinas.
+    2. Ventilar contenido radiactivo.
+    3. Evacuar agua caliente e ingresar agua fría.
+    4. Apagar reactor.
+    """)
+    st.markdown("<hr>", unsafe_allow_html=True)
+
     st.subheader("🎛️ PANEL DE CONTROL")
     
-    # Mostrar alertas de error si el usuario presiona en mal orden
+    # Sistema de Alertas por errores
     if st.session_state.alerta:
         st.error(st.session_state.alerta)
 
@@ -118,9 +139,10 @@ with col_panel:
     c1, c2 = st.columns(2)
     if c1.button("Encender turbina", use_container_width=True):
         st.session_state.turbina = "encendida"
+        st.session_state.alerta = ""
     if c2.button("Detener turbina", use_container_width=True):
         st.session_state.turbina = "detenida"
-        st.session_state.alerta = "" # Limpiar error
+        st.session_state.alerta = ""
 
     # 2. Botones de Ventilación
     st.write("**2. Sistema de Ventilación**")
@@ -133,6 +155,7 @@ with col_panel:
             st.session_state.alerta = "ERROR SECUENCIA: Debe 'Detener turbina' primero."
     if c4.button("Cerrar ventilación", use_container_width=True):
         st.session_state.ventilacion = "cerrada"
+        st.session_state.alerta = ""
 
     # 3. Botones de Agua
     st.write("**3. Refrigeración por Agua**")
@@ -143,7 +166,6 @@ with col_panel:
             st.session_state.alerta = ""
         else:
             st.session_state.alerta = "ERROR SECUENCIA: Debe 'Abrir ventilación' primero."
-            
     if c6.button("Ingresar agua", use_container_width=True):
         if st.session_state.agua == "evacuada":
             st.session_state.agua = "ingresada"
@@ -151,9 +173,13 @@ with col_panel:
         else:
             st.session_state.alerta = "ERROR SECUENCIA: Debe 'Evacuar agua' caliente primero."
 
-    # 4. Botón de Reactor
+    # 4. Botones de Reactor
     st.write("**4. Núcleo del Reactor**")
-    if st.button("Apagar reactor", use_container_width=True):
+    c7, c8 = st.columns(2)
+    if c7.button("Encender reactor", use_container_width=True):
+        st.session_state.reactor = "encendido"
+        st.session_state.alerta = ""
+    if c8.button("Apagar reactor", use_container_width=True):
         if st.session_state.agua == "ingresada":
             st.session_state.reactor = "apagado"
             st.session_state.alerta = ""
@@ -170,7 +196,7 @@ listo = (st.session_state.turbina == "detenida" and
          st.session_state.reactor == "apagado")
 
 if not listo:
-    st.warning("🔒 BOTÓN DE EMERGENCIA BLOQUEADO - COMPLETE LOS PASOS 1 AL 4")
+    st.warning("🔒 BOTÓN DE EMERGENCIA BLOQUEADO - COMPLETE LOS PASOS 1 AL 4 EN ORDEN PARA DESBLOQUEAR")
     st.button("🔴 PRESIONAR BOTÓN DE EMERGENCIA", disabled=True, use_container_width=True)
 else:
     if st.button("🔴 PRESIONAR BOTÓN DE EMERGENCIA", type="primary", use_container_width=True):
@@ -190,7 +216,6 @@ if st.session_state.exito:
         st.rerun()
 
 # 8. EL MOTOR DEL TEMPORIZADOR EN TIEMPO REAL
-# Esto hace que Streamlit recargue la pantalla automáticamente cada 0.5 segundos
 if not st.session_state.exito and not st.session_state.game_over:
     time.sleep(0.5)
     st.rerun()
