@@ -22,13 +22,20 @@ st.markdown("""
         text-shadow: 0px 0px 15px #ff003c;
     }
     .panel-caja {
-        border: 2px solid #333;
-        background-color: #161b22;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: inset 0 0 10px #000;
-        height: 100%;
+    background: linear-gradient(135deg, #7f8c8d, #bdc3c7);
+    border: 4px ridge #95a5a6; /* Borde tipo relieve metálico */
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 10px 10px 20px rgba(0,0,0,0.6);
+    color: #000 !important; /* Texto negro sobre metal para contrastar */
     }
+
+    /* Ajustar el texto dentro del chasis de metal para que sea negro y legible */
+    .panel-caja h2, .panel-caja h3, .panel-caja p, .panel-caja label {
+    color: #111 !important;
+    text-shadow: none !important;
+    }
+    
     .stProgress > div > div > div {
         background-color: #39ff14;
     }
@@ -230,3 +237,36 @@ if st.session_state.exito:
 if not st.session_state.exito and not st.session_state.game_over:
     time.sleep(0.5)
     st.rerun()
+
+/* Transformar los botones planos en interruptores 3D */
+.stButton > button {
+    background: linear-gradient(to bottom, #4a4a4a, #2b2b2b) !important;
+    border: 2px solid #1a1a1a !important;
+    border-radius: 5px !important;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.5), inset 0 2px 2px rgba(255,255,255,0.2) !important;
+    color: #e0e0e0 !important;
+    font-weight: bold !important;
+    text-transform: uppercase;
+    transition: all 0.1s ease !important;
+}
+
+/* Efecto al presionar el botón (hundimiento) */
+.stButton > button:active {
+    box-shadow: 0 1px 2px rgba(0,0,0,0.5), inset 0 2px 5px rgba(0,0,0,0.8) !important;
+    transform: translateY(4px) !important;
+}
+
+/* Efecto de resplandor para simular pantalla CRT antigua */
+h1, h2, h3, p, label {
+    text-shadow: 0px 0px 4px rgba(57, 255, 20, 0.6) !important;
+}
+
+/* El temporizador debe parecer un display LED de siete segmentos */
+[data-testid="stMetricValue"] {
+    font-family: 'Courier New', Courier, monospace !important;
+    background-color: #000;
+    padding: 10px;
+    border: 3px inset #333;
+    border-radius: 5px;
+    box-shadow: 0 0 10px #ff003c inset;
+}
