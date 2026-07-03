@@ -4,7 +4,7 @@ import time
 # 1. Configuración de página (Pantalla completa simulada)
 st.set_page_config(page_title="Simulador Central Nuclear", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. CSS Avanzado: Esqueumorfismo (Efectos Metálicos, CRT, 3D y Textura de Fondo)
+# 2. CSS Avanzado: Esqueumorfismo y Tamaños Ajustados para Video
 st.markdown("""
 <style>
     /* Fondo exterior con textura de acero perforado industrial */
@@ -15,19 +15,25 @@ st.markdown("""
         background-position: 0 0, 10px 10px;
     }
 
-    /* Título principal con efecto resplandor CRT */
+    /* Aumento general de textos fuera de los paneles */
+    p, li, label, div.stMarkdown {
+        font-size: 1.2rem !important;
+    }
+
+    /* Título principal con efecto resplandor CRT (Más grande) */
     h1 {
         color: #39ff14 !important;
         text-shadow: 0px 0px 10px rgba(57, 255, 20, 0.7) !important;
         text-align: center;
         font-family: 'Courier New', Courier, monospace;
         margin-bottom: 20px;
+        font-size: 3.5rem !important;
     }
 
     /* Display LED para el temporizador */
     [data-testid="stMetricValue"] {
         color: #ff003c !important;
-        font-size: 4.5rem !important;
+        font-size: 5rem !important;
         font-family: 'Courier New', Courier, monospace !important;
         text-shadow: 0px 0px 15px #ff003c;
         background-color: #050505;
@@ -42,7 +48,7 @@ st.markdown("""
     [data-testid="stMetricLabel"] {
         color: #39ff14 !important;
         font-weight: bold;
-        font-size: 1.2rem !important;
+        font-size: 1.5rem !important;
         text-align: center;
         font-family: 'Courier New', Courier, monospace;
     }
@@ -58,10 +64,21 @@ st.markdown("""
         font-family: 'Courier New', Courier, monospace;
     }
     
-    /* Forzar que todo el texto dentro del chasis de metal sea oscuro */
-    .panel-caja p, .panel-caja strong, .panel-caja h2, .panel-caja h3, .panel-caja li, .panel-caja div {
+    /* MODIFICACIÓN CLAVE: Aumentar dramáticamente el tamaño dentro de los paneles (Estado y Procedimiento) */
+    .panel-caja p, .panel-caja strong, .panel-caja li, .panel-caja span {
         color: #111 !important;
         text-shadow: none !important;
+        font-size: 1.4rem !important; /* Tamaño de letra gigante para video */
+        line-height: 1.6 !important;
+    }
+    
+    .panel-caja h3 {
+        color: #111 !important;
+        text-shadow: none !important;
+        font-size: 2.2rem !important; /* Títulos de los paneles gigantes */
+        border-bottom: 2px solid #777;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
     }
 
     /* Transformar los botones planos en interruptores industriales 3D */
@@ -72,9 +89,11 @@ st.markdown("""
         box-shadow: 0 6px 12px rgba(0,0,0,0.6), inset 0 2px 2px rgba(255,255,255,0.3) !important;
         color: #fff !important;
         font-weight: 900 !important;
+        font-size: 1.2rem !important; /* Botones más legibles */
         text-transform: uppercase;
         font-family: 'Courier New', Courier, monospace;
         transition: all 0.1s ease !important;
+        padding: 10px !important;
     }
 
     /* Efecto de hundimiento al presionar el interruptor */
@@ -87,6 +106,8 @@ st.markdown("""
     .stButton > button[data-baseweb="button"][kind="primary"] {
         background: linear-gradient(to bottom, #e74c3c, #96281b) !important;
         box-shadow: 0 6px 15px rgba(231, 76, 60, 0.6), inset 0 2px 2px rgba(255,255,255,0.4) !important;
+        font-size: 1.5rem !important; /* Botón final gigante */
+        padding: 15px !important;
     }
     
     .stButton > button[data-baseweb="button"][kind="primary"]:active {
