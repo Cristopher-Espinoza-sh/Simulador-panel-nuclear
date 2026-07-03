@@ -68,14 +68,14 @@ st.markdown("""
     .panel-caja p, .panel-caja strong, .panel-caja li, .panel-caja span {
         color: #111 !important;
         text-shadow: none !important;
-        font-size: 1.4rem !important; /* Tamaño de letra gigante para video */
+        font-size: 1.4rem !important;
         line-height: 1.6 !important;
     }
     
     .panel-caja h3 {
         color: #111 !important;
         text-shadow: none !important;
-        font-size: 2.2rem !important; /* Títulos de los paneles gigantes */
+        font-size: 2.2rem !important;
         border-bottom: 2px solid #777;
         padding-bottom: 10px;
         margin-bottom: 20px;
@@ -89,7 +89,7 @@ st.markdown("""
         box-shadow: 0 6px 12px rgba(0,0,0,0.6), inset 0 2px 2px rgba(255,255,255,0.3) !important;
         color: #fff !important;
         font-weight: 900 !important;
-        font-size: 1.2rem !important; /* Botones más legibles */
+        font-size: 1.2rem !important;
         text-transform: uppercase;
         font-family: 'Courier New', Courier, monospace;
         transition: all 0.1s ease !important;
@@ -106,7 +106,7 @@ st.markdown("""
     .stButton > button[data-baseweb="button"][kind="primary"] {
         background: linear-gradient(to bottom, #e74c3c, #96281b) !important;
         box-shadow: 0 6px 15px rgba(231, 76, 60, 0.6), inset 0 2px 2px rgba(255,255,255,0.4) !important;
-        font-size: 1.5rem !important; /* Botón final gigante */
+        font-size: 1.5rem !important;
         padding: 15px !important;
     }
     
@@ -130,7 +130,11 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 3. Inicializar variables del sistema
+# 3. Función auxiliar para limpiar la memoria antes de recargar
+def limpiar_sistema():
+    st.session_state.clear()
+
+# 4. Inicializar variables del sistema
 if 'inicio' not in st.session_state:
     st.session_state.inicio = time.time()
     st.session_state.turbina = "encendida"
@@ -141,14 +145,14 @@ if 'inicio' not in st.session_state:
     st.session_state.exito = False
     st.session_state.game_over = False
 
-# 4. Cálculo del tiempo en tiempo real
+# 5. Cálculo del tiempo en tiempo real
 transcurrido = time.time() - st.session_state.inicio
 tiempo_restante = max(0, int(30 - transcurrido))
 
 if tiempo_restante == 0 and not st.session_state.exito:
     st.session_state.game_over = True
 
-# 5. Interfaz Gráfica Principal
+# 6. Interfaz Gráfica Principal
 st.markdown("<h1>☢️ SISTEMA DE CONTENCIÓN DEL NÚCLEO ☢️</h1>", unsafe_allow_html=True)
 
 # Contenedor del reloj central
@@ -288,7 +292,7 @@ with col_panel:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# 6. Botón Final de Emergencia (Aislado visualmente)
+# 7. Botón Final de Emergencia (Aislado visualmente)
 st.markdown("<br>", unsafe_allow_html=True)
 listo = (st.session_state.turbina == "detenida" and 
          st.session_state.ventilacion == "abierta" and 
@@ -305,21 +309,19 @@ with col_btn:
         if st.button("🔴 PRESIONAR BOTÓN DE EMERGENCIA", type="primary", use_container_width=True):
             st.session_state.exito = True
 
-# 7. Estados de Fin de Juego
+# 8. Estados de Fin de Juego (Corregidos con on_click para no dejar rastro del mensaje)
 if st.session_state.game_over:
     st.error("💥 EXPLOSIÓN INMINENTE. PROTOCOLO FALLIDO. LOS ZOMBIES HAN SIDO MUTADOS.")
-    if st.button("Reiniciar Sistema"):
-        for key in list(st.session_state.keys()): del st.session_state[key]
-        st.rerun()
+    # Usamos on_click para borrar la memoria al instante
+    st.button("Reiniciar Sistema", on_click=limpiar_sistema)
 
 if st.session_state.exito:
     st.balloons()
     st.success("✅ PROTOCOLO COMPLETADO. EL SISTEMA SE HA DETENIDO CORRECTAMENTE. ZONA SEGURA.")
-    if st.button("Volver a simular"):
-        for key in list(st.session_state.keys()): del st.session_state[key]
-        st.rerun()
+    # Usamos on_click para borrar la memoria al instante
+    st.button("Volver a simular", on_click=limpiar_sistema)
 
-# 8. EL MOTOR DEL TEMPORIZADOR EN TIEMPO REAL
+# 9. EL MOTOR DEL TEMPORIZADOR EN TIEMPO REAL
 if not st.session_state.exito and not st.session_state.game_over:
     time.sleep(0.5)
     st.rerun()
