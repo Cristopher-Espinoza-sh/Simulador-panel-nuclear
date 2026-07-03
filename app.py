@@ -4,12 +4,15 @@ import time
 # 1. Configuración de página (Pantalla completa simulada)
 st.set_page_config(page_title="Simulador Central Nuclear", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. CSS Avanzado: Esqueumorfismo (Efectos Metálicos, CRT y 3D)
+# 2. CSS Avanzado: Esqueumorfismo (Efectos Metálicos, CRT, 3D y Textura de Fondo)
 st.markdown("""
 <style>
-    /* Fondo oscuro exterior */
+    /* Fondo exterior con textura de acero perforado industrial */
     .stApp {
-        background-color: #0d1117;
+        background-color: #121212;
+        background-image: radial-gradient(#2a2a2a 15%, transparent 16%), radial-gradient(#2a2a2a 15%, transparent 16%);
+        background-size: 20px 20px;
+        background-position: 0 0, 10px 10px;
     }
 
     /* Título principal con efecto resplandor CRT */
