@@ -1,26 +1,19 @@
 import streamlit as st
 import time
 
-# 1. Configuración de página (Pantalla completa simulada)
+# 1. Configuración de página
 st.set_page_config(page_title="Simulador Central Nuclear", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. CSS Avanzado: Esqueumorfismo y Tamaños Ajustados para Video
+# 2. CSS Avanzado
 st.markdown("""
 <style>
-    /* Fondo exterior con textura de acero perforado industrial */
     .stApp {
         background-color: #121212;
         background-image: radial-gradient(#2a2a2a 15%, transparent 16%), radial-gradient(#2a2a2a 15%, transparent 16%);
         background-size: 20px 20px;
         background-position: 0 0, 10px 10px;
     }
-
-    /* Aumento general de textos fuera de los paneles */
-    p, li, label, div.stMarkdown {
-        font-size: 1.2rem !important;
-    }
-
-    /* Título principal con efecto resplandor CRT (Más grande) */
+    p, li, label, div.stMarkdown { font-size: 1.2rem !important; }
     h1 {
         color: #39ff14 !important;
         text-shadow: 0px 0px 10px rgba(57, 255, 20, 0.7) !important;
@@ -29,8 +22,6 @@ st.markdown("""
         margin-bottom: 20px;
         font-size: 3.5rem !important;
     }
-
-    /* Display LED para el temporizador */
     [data-testid="stMetricValue"] {
         color: #ff003c !important;
         font-size: 5rem !important;
@@ -44,7 +35,6 @@ st.markdown("""
         display: flex;
         justify-content: center;
     }
-    
     [data-testid="stMetricLabel"] {
         color: #39ff14 !important;
         font-weight: bold;
@@ -52,8 +42,6 @@ st.markdown("""
         text-align: center;
         font-family: 'Courier New', Courier, monospace;
     }
-
-    /* Chasis Metálico para los paneles */
     .panel-caja {
         background: linear-gradient(135deg, #8e9eab, #eef2f3);
         border: 4px ridge #95a5a6;
@@ -63,15 +51,12 @@ st.markdown("""
         height: 100%;
         font-family: 'Courier New', Courier, monospace;
     }
-    
-    /* Textos gigantes dentro de los paneles (Estado y Procedimiento) */
     .panel-caja p, .panel-caja strong, .panel-caja li, .panel-caja span {
         color: #111 !important;
         text-shadow: none !important;
         font-size: 1.4rem !important;
         line-height: 1.6 !important;
     }
-    
     .panel-caja h3 {
         color: #111 !important;
         text-shadow: none !important;
@@ -80,8 +65,6 @@ st.markdown("""
         padding-bottom: 10px;
         margin-bottom: 20px;
     }
-
-    /* Transformar los botones planos en interruptores industriales 3D */
     .stButton > button {
         background: linear-gradient(to bottom, #5c5c5c, #2b2b2b) !important;
         border: 2px solid #111 !important;
@@ -95,43 +78,28 @@ st.markdown("""
         transition: all 0.1s ease !important;
         padding: 10px !important;
     }
-
-    /* Efecto de hundimiento al presionar el interruptor */
     .stButton > button:active {
         box-shadow: 0 1px 2px rgba(0,0,0,0.8), inset 0 4px 8px rgba(0,0,0,0.9) !important;
         transform: translateY(5px) !important;
     }
-    
-    /* Botón de Emergencia (Rojo vibrante 3D) */
     .stButton > button[data-baseweb="button"][kind="primary"] {
         background: linear-gradient(to bottom, #e74c3c, #96281b) !important;
         box-shadow: 0 6px 15px rgba(231, 76, 60, 0.6), inset 0 2px 2px rgba(255,255,255,0.4) !important;
         font-size: 1.5rem !important;
         padding: 15px !important;
     }
-    
     .stButton > button[data-baseweb="button"][kind="primary"]:active {
         box-shadow: 0 1px 2px rgba(0,0,0,0.8), inset 0 4px 8px rgba(0,0,0,0.9) !important;
     }
-
-    /* Colores de las barras de progreso */
-    .stProgress > div > div > div {
-        background-color: #27ae60 !important;
-    }
-
-    /* Indicadores de estado visuales */
+    .stProgress > div > div > div { background-color: #27ae60 !important; }
     .indicador-on { color: #1e8449 !important; font-weight: 900; background-color: rgba(39,174,96,0.2); padding: 2px 5px; border-radius: 3px; border: 1px solid #1e8449;}
     .indicador-off { color: #c0392b !important; font-weight: 900; background-color: rgba(192,57,43,0.2); padding: 2px 5px; border-radius: 3px; border: 1px solid #c0392b;}
-    
-    hr {
-        border-color: #555;
-        opacity: 0.3;
-    }
+    hr { border-color: #555; opacity: 0.3; }
 </style>
 """, unsafe_allow_html=True)
 
-# 3. Inicializar variables del sistema
-if 'inicio' not in st.session_state:
+# 3. FUNCIÓN CALLBACK: Se ejecuta ANTES de que la página se vuelva a cargar
+def resetear_simulacion():
     st.session_state.inicio = time.time()
     st.session_state.turbina = "encendida"
     st.session_state.ventilacion = "cerrada"
@@ -141,16 +109,19 @@ if 'inicio' not in st.session_state:
     st.session_state.exito = False
     st.session_state.game_over = False
 
-# 4. Cálculo del tiempo en tiempo real
+# 4. Inicializar variables del sistema la primera vez
+if 'inicio' not in st.session_state:
+    resetear_simulacion()
+
+# 5. Cálculo del tiempo en tiempo real
 transcurrido = time.time() - st.session_state.inicio
 tiempo_restante = max(0, int(30 - transcurrido))
 
-# Forzar el límite de tiempo de manera estricta para evitar desfases
 if tiempo_restante == 0 and not st.session_state.exito and not st.session_state.game_over:
     st.session_state.game_over = True
     st.rerun()
 
-# 5. Interfaz Gráfica Principal
+# 6. Interfaz Gráfica Principal
 st.markdown("<h1>☢️ SISTEMA DE CONTENCIÓN DEL NÚCLEO ☢️</h1>", unsafe_allow_html=True)
 
 col_vacia, col_reloj, col_vacia2 = st.columns([1, 2, 1])
@@ -277,7 +248,7 @@ with col_panel:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# 6. Botón Final de Emergencia
+# 7. Botón Final de Emergencia
 st.markdown("<br>", unsafe_allow_html=True)
 listo = (st.session_state.turbina == "detenida" and 
          st.session_state.ventilacion == "abierta" and 
@@ -293,37 +264,21 @@ with col_btn:
         st.info("🔓 BLOQUEO DE SEGURIDAD LIBERADO")
         if st.button("🔴 PRESIONAR BOTÓN DE EMERGENCIA", type="primary", use_container_width=True):
             st.session_state.exito = True
-            st.rerun() # Esto borra cualquier otra pantalla y lanza la de éxito inmediatamente
+            st.rerun()
 
-# 7. Estados de Fin de Juego con reseteo explícito
+# 8. Estados de Fin de Juego (Llamando al Callback)
 if st.session_state.game_over:
     st.error("💥 EXPLOSIÓN INMINENTE. PROTOCOLO FALLIDO. LOS ZOMBIES HAN SIDO MUTADOS.")
-    if st.button("Reiniciar Sistema"):
-        st.session_state.inicio = time.time()
-        st.session_state.turbina = "encendida"
-        st.session_state.ventilacion = "cerrada"
-        st.session_state.agua = "normal" 
-        st.session_state.reactor = "encendido"
-        st.session_state.alerta = ""
-        st.session_state.exito = False
-        st.session_state.game_over = False
-        st.rerun() # Obliga a limpiar los mensajes de error visualmente al instante
+    # El atributo on_click ejecuta resetear_simulacion antes de recargar
+    st.button("Reiniciar Sistema", on_click=resetear_simulacion)
 
 if st.session_state.exito:
     st.balloons()
     st.success("✅ PROTOCOLO COMPLETADO. EL SISTEMA SE HA DETENIDO CORRECTAMENTE. ZONA SEGURA.")
-    if st.button("Volver a simular"):
-        st.session_state.inicio = time.time()
-        st.session_state.turbina = "encendida"
-        st.session_state.ventilacion = "cerrada"
-        st.session_state.agua = "normal" 
-        st.session_state.reactor = "encendido"
-        st.session_state.alerta = ""
-        st.session_state.exito = False
-        st.session_state.game_over = False
-        st.rerun() # Obliga a limpiar los globos y el mensaje de éxito visualmente al instante
+    # El atributo on_click ejecuta resetear_simulacion antes de recargar
+    st.button("Volver a simular", on_click=resetear_simulacion)
 
-# 8. EL MOTOR DEL TEMPORIZADOR EN TIEMPO REAL
+# 9. EL MOTOR DEL TEMPORIZADOR EN TIEMPO REAL
 if not st.session_state.exito and not st.session_state.game_over:
     time.sleep(0.5)
     st.rerun()
