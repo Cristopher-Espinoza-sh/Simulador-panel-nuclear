@@ -64,7 +64,7 @@ st.markdown("""
         font-family: 'Courier New', Courier, monospace;
     }
     
-    /* MODIFICACIÓN CLAVE: Aumentar dramáticamente el tamaño dentro de los paneles (Estado y Procedimiento) */
+    /* Textos gigantes dentro de los paneles (Estado y Procedimiento) */
     .panel-caja p, .panel-caja strong, .panel-caja li, .panel-caja span {
         color: #111 !important;
         text-shadow: none !important;
@@ -114,7 +114,7 @@ st.markdown("""
         box-shadow: 0 1px 2px rgba(0,0,0,0.8), inset 0 4px 8px rgba(0,0,0,0.9) !important;
     }
 
-    /* Colores de las barras de progreso para que destaquen sobre el metal */
+    /* Colores de las barras de progreso */
     .stProgress > div > div > div {
         background-color: #27ae60 !important;
     }
@@ -130,11 +130,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 3. Función auxiliar para limpiar la memoria antes de recargar
-def limpiar_sistema():
-    st.session_state.clear()
-
-# 4. Inicializar variables del sistema
+# 3. Inicializar variables del sistema
 if 'inicio' not in st.session_state:
     st.session_state.inicio = time.time()
     st.session_state.turbina = "encendida"
@@ -145,17 +141,18 @@ if 'inicio' not in st.session_state:
     st.session_state.exito = False
     st.session_state.game_over = False
 
-# 5. Cálculo del tiempo en tiempo real
+# 4. Cálculo del tiempo en tiempo real
 transcurrido = time.time() - st.session_state.inicio
 tiempo_restante = max(0, int(30 - transcurrido))
 
-if tiempo_restante == 0 and not st.session_state.exito:
+# Forzar el límite de tiempo de manera estricta para evitar desfases
+if tiempo_restante == 0 and not st.session_state.exito and not st.session_state.game_over:
     st.session_state.game_over = True
+    st.rerun()
 
-# 6. Interfaz Gráfica Principal
+# 5. Interfaz Gráfica Principal
 st.markdown("<h1>☢️ SISTEMA DE CONTENCIÓN DEL NÚCLEO ☢️</h1>", unsafe_allow_html=True)
 
-# Contenedor del reloj central
 col_vacia, col_reloj, col_vacia2 = st.columns([1, 2, 1])
 with col_reloj:
     if st.session_state.game_over:
@@ -167,21 +164,18 @@ with col_reloj:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# Columnas de Estado y Control (El Chasis Metálico)
 col_estado, col_panel = st.columns([1, 1])
 
 with col_estado:
     st.markdown("<div class='panel-caja'>", unsafe_allow_html=True)
     st.markdown("<h3>📊 ESTADO DEL SISTEMA</h3>", unsafe_allow_html=True)
     
-    # Bloque visual para el estado del Reactor
     if st.session_state.reactor == "encendido":
         st.error("☢️ NÚCLEO DEL REACTOR: EN LÍNEA (PELIGRO DE FUSIÓN)")
     else:
         st.success("✅ NÚCLEO DEL REACTOR: APAGADO (ESTABILIZADO)")
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Indicadores visuales de Turbina, Ventilación y Reactor
     turbina_color = "indicador-on" if st.session_state.turbina == "encendida" else "indicador-off"
     turbina_texto = "EN MARCHA" if st.session_state.turbina == "encendida" else "DETENIDAS"
     st.markdown(f"🔄 **Turbinas:** <span class='{turbina_color}'>{turbina_texto}</span>", unsafe_allow_html=True)
@@ -196,12 +190,10 @@ with col_estado:
 
     st.markdown("<hr>", unsafe_allow_html=True)
 
-    # Lógica de la Energía
     energia = 100 if st.session_state.turbina == "encendida" and st.session_state.reactor == "encendido" else 0
     st.write(f"⚡ **Energía Generada:** {energia} MWe")
     st.progress(energia / 100)
 
-    # Lógica de la Temperatura
     temp = 480
     if st.session_state.agua == "ingresada":
         temp = 150
@@ -210,7 +202,6 @@ with col_estado:
     if temp > 400:
         st.markdown("<p style='color: #c0392b; font-weight: bold;'>⚠️ CRÍTICO: TEMPERATURA SUPERA LOS 400°C</p>", unsafe_allow_html=True)
 
-    # Lógica del Agua
     nivel_agua = 50
     if st.session_state.agua == "evacuada": nivel_agua = 0
     elif st.session_state.agua == "ingresada": nivel_agua = 100
@@ -222,7 +213,6 @@ with col_estado:
 with col_panel:
     st.markdown("<div class='panel-caja'>", unsafe_allow_html=True)
     
-    # Lista de pasos a realizar
     st.markdown("<h3>📋 PROCEDIMIENTO</h3>", unsafe_allow_html=True)
     st.markdown("""
     1. Detener turbinas.
@@ -234,11 +224,9 @@ with col_panel:
 
     st.markdown("<h3>🎛️ PANEL DE INTERRUPTORES</h3>", unsafe_allow_html=True)
     
-    # Sistema de Alertas por errores
     if st.session_state.alerta:
         st.error(st.session_state.alerta)
 
-    # 1. Botones de Turbina
     st.write("**[ 1 ] CONTROL DE TURBINAS**")
     c1, c2 = st.columns(2)
     if c1.button("Encender", use_container_width=True):
@@ -248,7 +236,6 @@ with col_panel:
         st.session_state.turbina = "detenida"
         st.session_state.alerta = ""
 
-    # 2. Botones de Ventilación
     st.write("**[ 2 ] SISTEMA DE VENTILACIÓN**")
     c3, c4 = st.columns(2)
     if c3.button("Abrir", use_container_width=True):
@@ -261,7 +248,6 @@ with col_panel:
         st.session_state.ventilacion = "cerrada"
         st.session_state.alerta = ""
 
-    # 3. Botones de Agua
     st.write("**[ 3 ] REFRIGERACIÓN POR AGUA**")
     c5, c6 = st.columns(2)
     if c5.button("Evacuar Agua", use_container_width=True):
@@ -277,7 +263,6 @@ with col_panel:
         else:
             st.session_state.alerta = "ERROR SECUENCIA: Debe 'Evacuar Agua' caliente primero."
 
-    # 4. Botones de Reactor
     st.write("**[ 4 ] NÚCLEO DEL REACTOR**")
     c7, c8 = st.columns(2)
     if c7.button("Activar Reactor", use_container_width=True):
@@ -292,7 +277,7 @@ with col_panel:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# 7. Botón Final de Emergencia (Aislado visualmente)
+# 6. Botón Final de Emergencia
 st.markdown("<br>", unsafe_allow_html=True)
 listo = (st.session_state.turbina == "detenida" and 
          st.session_state.ventilacion == "abierta" and 
@@ -308,20 +293,37 @@ with col_btn:
         st.info("🔓 BLOQUEO DE SEGURIDAD LIBERADO")
         if st.button("🔴 PRESIONAR BOTÓN DE EMERGENCIA", type="primary", use_container_width=True):
             st.session_state.exito = True
+            st.rerun() # Esto borra cualquier otra pantalla y lanza la de éxito inmediatamente
 
-# 8. Estados de Fin de Juego (Corregidos con on_click para no dejar rastro del mensaje)
+# 7. Estados de Fin de Juego con reseteo explícito
 if st.session_state.game_over:
     st.error("💥 EXPLOSIÓN INMINENTE. PROTOCOLO FALLIDO. LOS ZOMBIES HAN SIDO MUTADOS.")
-    # Usamos on_click para borrar la memoria al instante
-    st.button("Reiniciar Sistema", on_click=limpiar_sistema)
+    if st.button("Reiniciar Sistema"):
+        st.session_state.inicio = time.time()
+        st.session_state.turbina = "encendida"
+        st.session_state.ventilacion = "cerrada"
+        st.session_state.agua = "normal" 
+        st.session_state.reactor = "encendido"
+        st.session_state.alerta = ""
+        st.session_state.exito = False
+        st.session_state.game_over = False
+        st.rerun() # Obliga a limpiar los mensajes de error visualmente al instante
 
 if st.session_state.exito:
     st.balloons()
     st.success("✅ PROTOCOLO COMPLETADO. EL SISTEMA SE HA DETENIDO CORRECTAMENTE. ZONA SEGURA.")
-    # Usamos on_click para borrar la memoria al instante
-    st.button("Volver a simular", on_click=limpiar_sistema)
+    if st.button("Volver a simular"):
+        st.session_state.inicio = time.time()
+        st.session_state.turbina = "encendida"
+        st.session_state.ventilacion = "cerrada"
+        st.session_state.agua = "normal" 
+        st.session_state.reactor = "encendido"
+        st.session_state.alerta = ""
+        st.session_state.exito = False
+        st.session_state.game_over = False
+        st.rerun() # Obliga a limpiar los globos y el mensaje de éxito visualmente al instante
 
-# 9. EL MOTOR DEL TEMPORIZADOR EN TIEMPO REAL
+# 8. EL MOTOR DEL TEMPORIZADOR EN TIEMPO REAL
 if not st.session_state.exito and not st.session_state.game_over:
     time.sleep(0.5)
     st.rerun()
