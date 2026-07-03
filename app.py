@@ -4,48 +4,105 @@ import time
 # 1. Configuración de página (Pantalla completa simulada)
 st.set_page_config(page_title="Simulador Central Nuclear", layout="wide", initial_sidebar_state="collapsed")
 
-# 2. CSS Mágico para darle aspecto de Panel de Control Nuclear Real
+# 2. CSS Avanzado: Esqueumorfismo (Efectos Metálicos, CRT y 3D)
 st.markdown("""
 <style>
-    /* Fondo oscuro y tipografía industrial */
+    /* Fondo oscuro exterior */
     .stApp {
         background-color: #0d1117;
-        color: #39ff14;
-        font-family: 'Courier New', Courier, monospace;
-    }
-    h1, h2, h3, p, label, li {
-        color: #39ff14 !important;
-    }
-    [data-testid="stMetricValue"] {
-        color: #ff003c !important;
-        font-size: 4rem !important;
-        text-shadow: 0px 0px 15px #ff003c;
-    }
-    .panel-caja {
-    background: linear-gradient(135deg, #7f8c8d, #bdc3c7);
-    border: 4px ridge #95a5a6; /* Borde tipo relieve metálico */
-    padding: 20px;
-    border-radius: 4px;
-    box-shadow: 10px 10px 20px rgba(0,0,0,0.6);
-    color: #000 !important; /* Texto negro sobre metal para contrastar */
     }
 
-    /* Ajustar el texto dentro del chasis de metal para que sea negro y legible */
-    .panel-caja h2, .panel-caja h3, .panel-caja p, .panel-caja label {
-    color: #111 !important;
-    text-shadow: none !important;
+    /* Título principal con efecto resplandor CRT */
+    h1 {
+        color: #39ff14 !important;
+        text-shadow: 0px 0px 10px rgba(57, 255, 20, 0.7) !important;
+        text-align: center;
+        font-family: 'Courier New', Courier, monospace;
+        margin-bottom: 20px;
+    }
+
+    /* Display LED para el temporizador */
+    [data-testid="stMetricValue"] {
+        color: #ff003c !important;
+        font-size: 4.5rem !important;
+        font-family: 'Courier New', Courier, monospace !important;
+        text-shadow: 0px 0px 15px #ff003c;
+        background-color: #050505;
+        padding: 15px 30px;
+        border: 4px inset #222;
+        border-radius: 8px;
+        box-shadow: 0 0 20px rgba(255, 0, 60, 0.2) inset;
+        display: flex;
+        justify-content: center;
     }
     
-    .stProgress > div > div > div {
-        background-color: #39ff14;
+    [data-testid="stMetricLabel"] {
+        color: #39ff14 !important;
+        font-weight: bold;
+        font-size: 1.2rem !important;
+        text-align: center;
+        font-family: 'Courier New', Courier, monospace;
     }
+
+    /* Chasis Metálico para los paneles */
+    .panel-caja {
+        background: linear-gradient(135deg, #8e9eab, #eef2f3);
+        border: 4px ridge #95a5a6;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 10px 10px 20px rgba(0,0,0,0.7), inset 0 0 20px rgba(255,255,255,0.5);
+        height: 100%;
+        font-family: 'Courier New', Courier, monospace;
+    }
+    
+    /* Forzar que todo el texto dentro del chasis de metal sea oscuro */
+    .panel-caja p, .panel-caja strong, .panel-caja h2, .panel-caja h3, .panel-caja li, .panel-caja div {
+        color: #111 !important;
+        text-shadow: none !important;
+    }
+
+    /* Transformar los botones planos en interruptores industriales 3D */
+    .stButton > button {
+        background: linear-gradient(to bottom, #5c5c5c, #2b2b2b) !important;
+        border: 2px solid #111 !important;
+        border-radius: 6px !important;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.6), inset 0 2px 2px rgba(255,255,255,0.3) !important;
+        color: #fff !important;
+        font-weight: 900 !important;
+        text-transform: uppercase;
+        font-family: 'Courier New', Courier, monospace;
+        transition: all 0.1s ease !important;
+    }
+
+    /* Efecto de hundimiento al presionar el interruptor */
+    .stButton > button:active {
+        box-shadow: 0 1px 2px rgba(0,0,0,0.8), inset 0 4px 8px rgba(0,0,0,0.9) !important;
+        transform: translateY(5px) !important;
+    }
+    
+    /* Botón de Emergencia (Rojo vibrante 3D) */
+    .stButton > button[data-baseweb="button"][kind="primary"] {
+        background: linear-gradient(to bottom, #e74c3c, #96281b) !important;
+        box-shadow: 0 6px 15px rgba(231, 76, 60, 0.6), inset 0 2px 2px rgba(255,255,255,0.4) !important;
+    }
+    
+    .stButton > button[data-baseweb="button"][kind="primary"]:active {
+        box-shadow: 0 1px 2px rgba(0,0,0,0.8), inset 0 4px 8px rgba(0,0,0,0.9) !important;
+    }
+
+    /* Colores de las barras de progreso para que destaquen sobre el metal */
+    .stProgress > div > div > div {
+        background-color: #27ae60 !important;
+    }
+
+    /* Indicadores de estado visuales */
+    .indicador-on { color: #1e8449 !important; font-weight: 900; background-color: rgba(39,174,96,0.2); padding: 2px 5px; border-radius: 3px; border: 1px solid #1e8449;}
+    .indicador-off { color: #c0392b !important; font-weight: 900; background-color: rgba(192,57,43,0.2); padding: 2px 5px; border-radius: 3px; border: 1px solid #c0392b;}
+    
     hr {
-        border-color: #39ff14;
+        border-color: #555;
         opacity: 0.3;
     }
-    /* Colores dinámicos para los indicadores de estado */
-    .indicador-on { color: #39ff14; font-weight: bold; }
-    .indicador-off { color: #ff003c; font-weight: bold; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -67,9 +124,8 @@ tiempo_restante = max(0, int(30 - transcurrido))
 if tiempo_restante == 0 and not st.session_state.exito:
     st.session_state.game_over = True
 
-# 5. Interfaz Gráfica
-st.markdown("<h1 style='text-align: center;'>☢️ SISTEMA DE CONTENCIÓN DEL NÚCLEO ☢️</h1>", unsafe_allow_html=True)
-st.markdown("<hr>", unsafe_allow_html=True)
+# 5. Interfaz Gráfica Principal
+st.markdown("<h1>☢️ SISTEMA DE CONTENCIÓN DEL NÚCLEO ☢️</h1>", unsafe_allow_html=True)
 
 # Contenedor del reloj central
 col_vacia, col_reloj, col_vacia2 = st.columns([1, 2, 1])
@@ -81,14 +137,16 @@ with col_reloj:
     else:
         st.metric(label="TIEMPO RESTANTE", value=f"00:{str(tiempo_restante).zfill(2)}")
 
-# Columnas de Estado y Control
+st.markdown("<br>", unsafe_allow_html=True)
+
+# Columnas de Estado y Control (El Chasis Metálico)
 col_estado, col_panel = st.columns([1, 1])
 
 with col_estado:
     st.markdown("<div class='panel-caja'>", unsafe_allow_html=True)
-    st.subheader("📊 ESTADO DEL SISTEMA")
+    st.markdown("<h3>📊 ESTADO DEL SISTEMA</h3>", unsafe_allow_html=True)
     
-    # NUEVO: Bloque visual enorme para el estado del Reactor
+    # Bloque visual para el estado del Reactor
     if st.session_state.reactor == "encendido":
         st.error("☢️ NÚCLEO DEL REACTOR: EN LÍNEA (PELIGRO DE FUSIÓN)")
     else:
@@ -108,27 +166,27 @@ with col_estado:
     reactor_texto = "ACTIVO" if st.session_state.reactor == "encendido" else "APAGADO"
     st.markdown(f"☢️ **Reactor:** <span class='{reactor_color}'>{reactor_texto}</span>", unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<hr>", unsafe_allow_html=True)
 
     # Lógica de la Energía
     energia = 100 if st.session_state.turbina == "encendida" and st.session_state.reactor == "encendido" else 0
-    st.write(f"⚡ Energía: {energia} MWe")
+    st.write(f"⚡ **Energía Generada:** {energia} MWe")
     st.progress(energia / 100)
 
     # Lógica de la Temperatura
     temp = 480
     if st.session_state.agua == "ingresada":
         temp = 150
-    st.write(f"🌡️ Temperatura del refrigerante: {temp}°C")
+    st.write(f"🌡️ **Temperatura del refrigerante:** {temp}°C")
     st.progress(min(temp/500, 1.0))
     if temp > 400:
-        st.markdown("<p style='color: #ff003c;'>⚠️ CRÍTICO: TEMPERATURA SUPERA LOS 400°C</p>", unsafe_allow_html=True)
+        st.markdown("<p style='color: #c0392b; font-weight: bold;'>⚠️ CRÍTICO: TEMPERATURA SUPERA LOS 400°C</p>", unsafe_allow_html=True)
 
     # Lógica del Agua
     nivel_agua = 50
     if st.session_state.agua == "evacuada": nivel_agua = 0
     elif st.session_state.agua == "ingresada": nivel_agua = 100
-    st.write(f"💧 Nivel de agua: {nivel_agua}%")
+    st.write(f"💧 **Nivel de agua de emergencia:** {nivel_agua}%")
     st.progress(nivel_agua / 100)
     
     st.markdown("</div>", unsafe_allow_html=True)
@@ -137,7 +195,7 @@ with col_panel:
     st.markdown("<div class='panel-caja'>", unsafe_allow_html=True)
     
     # Lista de pasos a realizar
-    st.subheader("📋 PASOS A REALIZAR")
+    st.markdown("<h3>📋 PROCEDIMIENTO</h3>", unsafe_allow_html=True)
     st.markdown("""
     1. Detener turbinas.
     2. Ventilar contenido radiactivo.
@@ -146,79 +204,82 @@ with col_panel:
     """)
     st.markdown("<hr>", unsafe_allow_html=True)
 
-    st.subheader("🎛️ PANEL DE CONTROL")
+    st.markdown("<h3>🎛️ PANEL DE INTERRUPTORES</h3>", unsafe_allow_html=True)
     
     # Sistema de Alertas por errores
     if st.session_state.alerta:
         st.error(st.session_state.alerta)
 
     # 1. Botones de Turbina
-    st.write("**1. Control de Turbinas**")
+    st.write("**[ 1 ] CONTROL DE TURBINAS**")
     c1, c2 = st.columns(2)
-    if c1.button("Encender turbina", use_container_width=True):
+    if c1.button("Encender", use_container_width=True):
         st.session_state.turbina = "encendida"
         st.session_state.alerta = ""
-    if c2.button("Detener turbina", use_container_width=True):
+    if c2.button("Detener", use_container_width=True):
         st.session_state.turbina = "detenida"
         st.session_state.alerta = ""
 
     # 2. Botones de Ventilación
-    st.write("**2. Sistema de Ventilación**")
+    st.write("**[ 2 ] SISTEMA DE VENTILACIÓN**")
     c3, c4 = st.columns(2)
-    if c3.button("Abrir ventilación", use_container_width=True):
+    if c3.button("Abrir", use_container_width=True):
         if st.session_state.turbina == "detenida":
             st.session_state.ventilacion = "abierta"
             st.session_state.alerta = ""
         else:
-            st.session_state.alerta = "ERROR SECUENCIA: Debe 'Detener turbina' primero."
-    if c4.button("Cerrar ventilación", use_container_width=True):
+            st.session_state.alerta = "ERROR SECUENCIA: Debe 'Detener' las turbinas primero."
+    if c4.button("Cerrar", use_container_width=True):
         st.session_state.ventilacion = "cerrada"
         st.session_state.alerta = ""
 
     # 3. Botones de Agua
-    st.write("**3. Refrigeración por Agua**")
+    st.write("**[ 3 ] REFRIGERACIÓN POR AGUA**")
     c5, c6 = st.columns(2)
-    if c5.button("Evacuar agua", use_container_width=True):
+    if c5.button("Evacuar Agua", use_container_width=True):
         if st.session_state.ventilacion == "abierta":
             st.session_state.agua = "evacuada"
             st.session_state.alerta = ""
         else:
-            st.session_state.alerta = "ERROR SECUENCIA: Debe 'Abrir ventilación' primero."
-    if c6.button("Ingresar agua", use_container_width=True):
+            st.session_state.alerta = "ERROR SECUENCIA: Debe 'Abrir' la ventilación primero."
+    if c6.button("Ingresar Fría", use_container_width=True):
         if st.session_state.agua == "evacuada":
             st.session_state.agua = "ingresada"
             st.session_state.alerta = ""
         else:
-            st.session_state.alerta = "ERROR SECUENCIA: Debe 'Evacuar agua' caliente primero."
+            st.session_state.alerta = "ERROR SECUENCIA: Debe 'Evacuar Agua' caliente primero."
 
     # 4. Botones de Reactor
-    st.write("**4. Núcleo del Reactor**")
+    st.write("**[ 4 ] NÚCLEO DEL REACTOR**")
     c7, c8 = st.columns(2)
-    if c7.button("Encender reactor", use_container_width=True):
+    if c7.button("Activar Reactor", use_container_width=True):
         st.session_state.reactor = "encendido"
         st.session_state.alerta = ""
-    if c8.button("Apagar reactor", use_container_width=True):
+    if c8.button("Apagar Reactor", use_container_width=True):
         if st.session_state.agua == "ingresada":
             st.session_state.reactor = "apagado"
             st.session_state.alerta = ""
         else:
-            st.session_state.alerta = "ERROR SECUENCIA: Debe 'Ingresar agua' fría primero."
+            st.session_state.alerta = "ERROR SECUENCIA: Debe 'Ingresar Fría' primero."
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# 6. Botón Final de Emergencia
+# 6. Botón Final de Emergencia (Aislado visualmente)
 st.markdown("<br>", unsafe_allow_html=True)
 listo = (st.session_state.turbina == "detenida" and 
          st.session_state.ventilacion == "abierta" and 
          st.session_state.agua == "ingresada" and 
          st.session_state.reactor == "apagado")
 
-if not listo:
-    st.warning("🔒 BOTÓN DE EMERGENCIA BLOQUEADO - COMPLETE LOS PASOS 1 AL 4 EN ORDEN PARA DESBLOQUEAR")
-    st.button("🔴 PRESIONAR BOTÓN DE EMERGENCIA", disabled=True, use_container_width=True)
-else:
-    if st.button("🔴 PRESIONAR BOTÓN DE EMERGENCIA", type="primary", use_container_width=True):
-        st.session_state.exito = True
+col_izq, col_btn, col_der = st.columns([1, 2, 1])
+with col_btn:
+    if not listo:
+        st.warning("🔒 BOTÓN DE EMERGENCIA BLOQUEADO - COMPLETE LOS PASOS 1 AL 4 PARA DESBLOQUEAR")
+        st.button("🔴 PRESIONAR BOTÓN DE EMERGENCIA", disabled=True, use_container_width=True)
+    else:
+        st.info("🔓 BLOQUEO DE SEGURIDAD LIBERADO")
+        if st.button("🔴 PRESIONAR BOTÓN DE EMERGENCIA", type="primary", use_container_width=True):
+            st.session_state.exito = True
 
 # 7. Estados de Fin de Juego
 if st.session_state.game_over:
@@ -228,6 +289,7 @@ if st.session_state.game_over:
         st.rerun()
 
 if st.session_state.exito:
+    st.balloons()
     st.success("✅ PROTOCOLO COMPLETADO. EL SISTEMA SE HA DETENIDO CORRECTAMENTE. ZONA SEGURA.")
     if st.button("Volver a simular"):
         for key in list(st.session_state.keys()): del st.session_state[key]
@@ -237,36 +299,3 @@ if st.session_state.exito:
 if not st.session_state.exito and not st.session_state.game_over:
     time.sleep(0.5)
     st.rerun()
-
-/* Transformar los botones planos en interruptores 3D */
-.stButton > button {
-    background: linear-gradient(to bottom, #4a4a4a, #2b2b2b) !important;
-    border: 2px solid #1a1a1a !important;
-    border-radius: 5px !important;
-    box-shadow: 0 5px 10px rgba(0,0,0,0.5), inset 0 2px 2px rgba(255,255,255,0.2) !important;
-    color: #e0e0e0 !important;
-    font-weight: bold !important;
-    text-transform: uppercase;
-    transition: all 0.1s ease !important;
-}
-
-/* Efecto al presionar el botón (hundimiento) */
-.stButton > button:active {
-    box-shadow: 0 1px 2px rgba(0,0,0,0.5), inset 0 2px 5px rgba(0,0,0,0.8) !important;
-    transform: translateY(4px) !important;
-}
-
-/* Efecto de resplandor para simular pantalla CRT antigua */
-h1, h2, h3, p, label {
-    text-shadow: 0px 0px 4px rgba(57, 255, 20, 0.6) !important;
-}
-
-/* El temporizador debe parecer un display LED de siete segmentos */
-[data-testid="stMetricValue"] {
-    font-family: 'Courier New', Courier, monospace !important;
-    background-color: #000;
-    padding: 10px;
-    border: 3px inset #333;
-    border-radius: 5px;
-    box-shadow: 0 0 10px #ff003c inset;
-}
